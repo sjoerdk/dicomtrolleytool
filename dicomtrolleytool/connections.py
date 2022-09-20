@@ -1,12 +1,12 @@
-"""Models things that can directly connect to a DICOM server."""
+"""Models things that can directly connect to a DICOM server"""
 import json
 
-from dicomtrolley.auth import create_session
-from dicomtrolley.mint import Mint
+from dicomtrolleytool.persistence import Storage
 from pydantic.main import BaseModel
 from pydantic.types import SecretStr
 
-from dicomtrolleytool.persistence import Storage
+from dicomtrolley.auth import create_session
+from dicomtrolley.mint import Mint
 
 
 class Connection:
@@ -16,7 +16,8 @@ class Connection:
 class MintConnection(Connection, BaseModel):
     """Can do DICOM searches with MINT
 
-    Wrapper around dicomtrolley."""
+    Wrapper around dicomtrolley.
+    """
 
     login_url: str
     mint_url: str
@@ -33,17 +34,12 @@ class MintConnection(Connection, BaseModel):
     def write_to_storage(self, storage: Storage, key: str):
         """Write this connection to storage under key"""
         params = self.dict()
-        params['password'] = self.password.get_secret_value()
+        params["password"] = self.password.get_secret_value()
         storage.write(key, json.dumps(params))
 
     def init_searcher(self):
         """Create a searcher instance from this connection"""
-        session = create_session(self.login_url, self.user,
-                                 self.password.get_secret_value(),
-                                 self.realm)
+        session = create_session(
+            self.login_url, self.user, self.password.get_secret_value(), self.realm
+        )
         return Mint(session, self.mint_url)
-
-
-
-
-

@@ -11,4 +11,4 @@ class StudyInstanceUIDQuery(Operation):
 
     def apply(self, row):
         id_value = row[self.id_column]
-        return {'server_result': self.server_func(id_value)}
+        return {"server_result": self.server_func(id_value)}

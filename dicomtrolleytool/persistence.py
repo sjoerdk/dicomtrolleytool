@@ -1,9 +1,9 @@
-"""Functions and classes for handling the storage of sensitive data"""
+"""Functions and classes for handling the storage of sensitive data."""
 import keyring
 
 
 class Storage:
-    """Something you can store data in"""
+    """Something you can store data in."""
 
     def write(self, key, value):
         raise NotImplementedError()
@@ -30,6 +30,7 @@ class KeyRingStorage(Storage):
 
 class MemoryStorage(Storage):
     """Stores in memory. Only useful for testing."""
+
     def __init__(self):
         self.storage = {}
 
