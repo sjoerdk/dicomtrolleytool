@@ -26,6 +26,8 @@ pip install dicomtrolleytool
 ``` 
 
 ## Usage
+{{% octicon-alert Not implemented yet }}
+
 From command line:
 ```
 > trolley query StudyInstanceUID=12345
@@ -33,5 +35,7 @@ From command line:
 ```
 
 ## Handling credentials
+{{% octicon-alert Not implemented yet }}
+
 Add credentials to keyring:
 trolley credentials add -f <json file>
