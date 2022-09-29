@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dicomtrolleytool"
-version = "0.2.0"
+version = "0.3.0"
 description = "Command line tool for dicom query and download"
 authors = ["sjoerdk <sjoerd.kerkstra@radboudumc.nl>"]
 license = "Apache-2.0"
