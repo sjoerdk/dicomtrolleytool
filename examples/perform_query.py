@@ -4,7 +4,7 @@ from dicomtrolleytool.persistence import KeyRingStorage
 from dicomtrolley.core import Query, QueryLevels
 
 storage = KeyRingStorage()
-searcher = MintConnection.init_from_storage(storage, "Connection1").init_searcher()
+searcher = MintConnection.init_from_dict(storage, "Connection1").init_searcher()
 
 
 study = searcher.find_study(
