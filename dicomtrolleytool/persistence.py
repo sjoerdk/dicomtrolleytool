@@ -1,5 +1,36 @@
-"""Functions and classes for handling the storage of sensitive data."""
+"""Functions and classes for handling settings and sensitive data."""
+import pathlib
+from io import StringIO
+from typing import Optional
+
 import keyring
+from dicomtrolleytool.exceptions import DICOMTrolleyToolError
+from pydantic.main import BaseModel
+
+
+DEFAULT_SETTINGS_PATH = pathlib.Path.home() / "DICOMTrolleyToolSettings.yml"
+
+
+class DICOMTrolleyToolSettings(BaseModel):
+
+    searcher_name: str
+    downloader_name: str
+
+    query_missing: Optional[bool]
+
+    # specific to rad69 downloader
+    http_chunk_size: Optional[int]
+    request_per_series: bool = True
+
+    def write_to(self, stream: StringIO):
+        """Persist this object to given stream"""
+        stream.write(self.json())
+
+    def save(self, path=None):
+        if not path:
+            path = DEFAULT_SETTINGS_PATH
+        with open(path, "w") as f:
+            self.write_to(f)
 
 
 class Storage:
@@ -42,3 +73,7 @@ class MemoryStorage(Storage):
 
     def delete(self, key):
         self.storage.pop([key])
+
+
+class PersistenceError(DICOMTrolleyToolError):
+    pass
