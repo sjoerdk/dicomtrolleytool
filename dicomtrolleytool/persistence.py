@@ -19,6 +19,10 @@ DEFAULT_SETTINGS_PATH = (
 
 
 class TrolleyToolSettings(BaseModel):
+    """Settings for using the trolleytool commandline. Saves often-repeated settings
+    to make it possible to use 'download scan 1234' from the command line
+    without specifying any additional settings
+    """
 
     searcher_name: str
     downloader_name: str
@@ -81,6 +85,13 @@ class Storage:
         raise NotImplementedError()
 
     def load_value(self, key):
+        """Find data for key in storage
+
+        Raises
+        ------
+        PersistenceError
+            if key is not found
+        """
         raise NotImplementedError()
 
     def delete(self, key):
@@ -107,7 +118,12 @@ class KeyRingStorage(Storage):
         keyring.set_password(self.service_name, key, value)
 
     def load_value(self, key):
-        return keyring.get_password(self.service_name, key)
+        value = keyring.get_password(self.service_name, key)
+        if value is None:
+            raise PersistenceError(
+                f"Could not find key '{key}' for service " f"'{self.service_name}"
+            )
+        return value
 
     def delete(self, key):
         return keyring.delete_password(self.service_name, key)
@@ -123,7 +139,12 @@ class MemoryStorage(Storage):
         self.storage[key] = value
 
     def load_value(self, key):
-        return self.storage.get(key)
+        try:
+            return self.storage[key]
+        except KeyError as e:
+            raise PersistenceError(
+                f"Could not find key '{key}' in memory storage"
+            ) from e
 
     def delete(self, key):
         self.storage.pop([key])

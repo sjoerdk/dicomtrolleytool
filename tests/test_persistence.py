@@ -1,4 +1,12 @@
-from dicomtrolleytool.persistence import DiskSettings, TrolleyToolSettings
+import pytest
+
+from dicomtrolleytool.persistence import (
+    DiskSettings,
+    KeyRingStorage,
+    MemoryStorage,
+    PersistenceError,
+    TrolleyToolSettings,
+)
 
 
 def test_settings(tmp_path):
@@ -21,3 +29,12 @@ def test_disk_settings(tmp_path):
     assert path.exists()
     loaded = TrolleyToolSettings.parse_file(path)
     assert loaded.json() == settings.json()
+
+
+def test_channel_not_found():
+    """Translate unhelpful loading error into something a user can use"""
+    with pytest.raises(PersistenceError):
+        KeyRingStorage().load_channel("UNKNOWN")
+
+    with pytest.raises(PersistenceError):
+        MemoryStorage().load_channel("NOT_THERE")

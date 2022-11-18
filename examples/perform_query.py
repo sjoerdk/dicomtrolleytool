@@ -1,11 +1,10 @@
-from dicomtrolleytool.connections import MintConnection
-from dicomtrolleytool.persistence import KeyRingStorage
-
 from dicomtrolley.core import Query, QueryLevels
 
-storage = KeyRingStorage()
-searcher = MintConnection.init_from_dict(storage, "Connection1").init_searcher()
+from dicomtrolleytool.persistence import KeyRingStorage
 
+
+storage = KeyRingStorage()
+searcher = storage.load_channel("VNA_MINT").init_searcher()
 
 study = searcher.find_study(
     query=Query(
@@ -14,6 +13,5 @@ study = searcher.find_study(
         query_level=QueryLevels.SERIES,
     )
 )
-
 
 print(study.data)
