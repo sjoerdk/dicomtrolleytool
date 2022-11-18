@@ -1,13 +1,14 @@
 """Models ways of communicating with a DICOM server"""
 from typing import Any, Dict, List
 
-from dicomtrolleytool.exceptions import TrolleyToolError
 from pydantic.main import BaseModel
 from pydantic.types import SecretStr
-
 from dicomtrolley.auth import create_session
+from dicomtrolley.dicom_qr import DICOMQR
 from dicomtrolley.mint import Mint
 from dicomtrolley.rad69 import Rad69
+
+from dicomtrolleytool.exceptions import TrolleyToolError
 
 
 class Channel(BaseModel):
@@ -66,7 +67,30 @@ class Rad69Channel(Channel):
         return Rad69(session=session, url=self.rad69_url)
 
 
-CHANNEL_CLASSES: Dict[str, Any] = {"rad69": Rad69Channel, "mint": MintChannel}
+class DICOMQRChannel(Channel):
+    """Query using dicom QR"""
+
+    host: str
+    port: str
+    aet: SecretStr
+    aec: SecretStr
+
+    def init_searcher(self) -> Mint:
+        """Create a downloader instance from this connection"""
+
+        return DICOMQR(
+            host=self.host,
+            port=int(self.port),
+            aet=self.aet.get_secret_value(),
+            aec=self.aec.get_secret_value(),
+        )
+
+
+CHANNEL_CLASSES: Dict[str, Any] = {
+    "rad69": Rad69Channel,
+    "mint": MintChannel,
+    "dicomqr": DICOMQRChannel,
+}
 
 
 class ChannelFactory:
