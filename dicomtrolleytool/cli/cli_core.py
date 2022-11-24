@@ -46,8 +46,8 @@ def get_context() -> TrolleyToolContext:
 def trolley_from_settings(settings: TrolleyToolSettings):
     storage = KeyRingStorage()
     trolley = Trolley(
-        searcher=storage.load_channel(settings.searcher_name),
-        downloader=storage.load_channel(settings.downloader_name),
+        searcher=storage.load_channel(settings.searcher_name).init_searcher(),
+        downloader=storage.load_channel(settings.downloader_name).init_downloader(),
     )
     if settings.query_missing:
         trolley.query_missing = settings.query_missing

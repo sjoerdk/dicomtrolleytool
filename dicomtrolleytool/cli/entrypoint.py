@@ -6,6 +6,7 @@ from dicomtrolleytool.cli.cli_core import (
     configure_logging,
     get_context,
 )
+from dicomtrolleytool.cli.query import query
 from dicomtrolleytool.persistence import (
     DEFAULT_SETTINGS_PATH,
 )
@@ -49,3 +50,4 @@ settings.add_command(edit)
 main.add_command(status)
 main.add_command(channel)
 main.add_command(settings)
+main.add_command(query)
