@@ -14,6 +14,9 @@ from dicomtrolleytool.exceptions import TrolleyToolError
 class Channel(BaseModel):
     """A ready-to-use channel of interaction with a DICOM server, with credentials"""
 
+    key: str  # for storage and retrieval
+    description: str = ""  # single-line human-readable description
+
     @classmethod
     def init_from_dict(cls, dict_in):
         """Init the connection stored under key"""

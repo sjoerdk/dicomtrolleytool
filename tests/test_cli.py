@@ -1,18 +1,4 @@
-from unittest.mock import Mock
-
-import pytest as pytest
-from dicomtrolleytool.cli.entrypoint import TrolleyToolContext, main, status
-
-from dicomtrolley.trolley import Trolley
-from tests.conftest import MockContextCliRunner
-
-
-@pytest.fixture
-def context_runner():
-    """Click test runner that injects mock context"""
-    return MockContextCliRunner(
-        mock_context=TrolleyToolContext(trolley=Mock(spec_set=Trolley))
-    )
+from dicomtrolleytool.cli.entrypoint import main, status
 
 
 def test_cli_base(context_runner):

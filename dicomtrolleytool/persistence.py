@@ -2,7 +2,7 @@
 import json
 import pathlib
 from io import StringIO
-from typing import Optional
+from typing import List, Optional
 
 import keyring
 from pydantic.main import BaseModel
@@ -33,9 +33,11 @@ class TrolleyToolSettings(BaseModel):
     http_chunk_size: Optional[int]
     request_per_series: bool = True
 
+    channels: List[str] = []
+
     def write_to(self, stream: StringIO):
         """Persist this object to given stream"""
-        stream.write(self.json())
+        stream.write(self.json(indent=2))
 
     def save(self, path=None):
         if not path:
@@ -44,13 +46,13 @@ class TrolleyToolSettings(BaseModel):
             self.write_to(f)
 
 
-class DiskSettings:
-    def __init__(self, path=None):
-        if not path:
-            path = DEFAULT_SETTINGS_PATH
+class SettingsFile:
+    """A file from which settings can be loaded"""
+
+    def __init__(self, path):
         self.path = path
 
-    def get_settings(self):
+    def load_settings(self) -> TrolleyToolSettings:
         self.assert_settings()
         return TrolleyToolSettings.parse_file(self.path)
 

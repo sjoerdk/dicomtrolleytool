@@ -6,6 +6,7 @@ from dicomtrolleytool.persistence import MemoryStorage
 @pytest.fixture
 def a_mint_connection():
     return MintChannel(
+        key="test_channel",
         login_url="login_url",
         mint_url="mint_url",
         user="user",

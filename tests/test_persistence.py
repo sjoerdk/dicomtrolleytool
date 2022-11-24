@@ -1,7 +1,7 @@
 import pytest
 
 from dicomtrolleytool.persistence import (
-    DiskSettings,
+    SettingsFile,
     KeyRingStorage,
     MemoryStorage,
     PersistenceError,
@@ -24,8 +24,8 @@ def test_settings(tmp_path):
 def test_disk_settings(tmp_path):
     path = tmp_path / "test_settings.json"
     assert not path.exists()
-    disk_settings = DiskSettings(path=path)
-    settings = disk_settings.get_settings()
+    disk_settings = SettingsFile(path=path)
+    settings = disk_settings.load_settings()
     assert path.exists()
     loaded = TrolleyToolSettings.parse_file(path)
     assert loaded.json() == settings.json()

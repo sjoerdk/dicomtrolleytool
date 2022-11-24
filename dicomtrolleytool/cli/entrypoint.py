@@ -1,18 +1,14 @@
-import logging
-from dataclasses import dataclass
-
 import click
-from dicomtrolleytool.logging import get_module_logger
+
+from dicomtrolleytool.cli.channel import channel
+from dicomtrolleytool.cli.cli_core import (
+    TrolleyToolContext,
+    configure_logging,
+    get_context,
+)
 from dicomtrolleytool.persistence import (
     DEFAULT_SETTINGS_PATH,
-    DiskSettings,
-    KeyRingStorage,
-    TrolleyToolSettings,
 )
-
-from dicomtrolley.trolley import Trolley
-
-logger = get_module_logger("trolleytool")
 
 
 @click.group()
@@ -27,44 +23,6 @@ def main(ctx, verbose):
     ctx.obj = get_context()
 
 
-def configure_logging(verbose):
-    if verbose == 0:
-        logging.basicConfig(level=logging.INFO)
-        logging.info("Set loglevel to INFO")
-    if verbose >= 1:
-        logging.basicConfig(level=logging.DEBUG)
-        logging.info("Set loglevel to DEBUG")
-
-
-@dataclass
-class TrolleyToolContext:
-    trolley: str
-
-
-def get_context() -> TrolleyToolContext:
-    """Collect objects used by trolleytool functions"
-
-    Returns
-    -------
-    TrolleyToolContext
-    """
-    return TrolleyToolContext(
-        trolley=trolley_from_settings(DiskSettings().get_settings())
-    )
-
-
-def trolley_from_settings(settings: TrolleyToolSettings):
-    storage = KeyRingStorage()
-    trolley = Trolley(
-        searcher=storage.load_channel(settings.searcher_name),
-        downloader=storage.load_channel(settings.downloader_name),
-    )
-    if settings.query_missing:
-        trolley.query_missing = settings.query_missing
-
-    return trolley
-
-
 @click.command(short_help="show tool status")
 @click.pass_obj
 def status(context: TrolleyToolContext):
@@ -74,4 +32,20 @@ def status(context: TrolleyToolContext):
     print(f"trolley: {context.trolley}")
 
 
+@click.group
+def settings():
+    """Trolley tool settings"""
+    pass
+
+
+@click.command(short_help="Edit settings")
+def edit():
+    click.launch(str(DEFAULT_SETTINGS_PATH))
+
+
+settings.add_command(edit)
+
+
 main.add_command(status)
+main.add_command(channel)
+main.add_command(settings)
