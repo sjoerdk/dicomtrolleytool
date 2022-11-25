@@ -4,7 +4,7 @@ import click
 from dicomtrolley.core import Query
 from dicomtrolley.trolley import Trolley
 
-from dicomtrolleytool.cli.cli_core import TrolleyToolContext
+from dicomtrolleytool.cli.base import TrolleyToolContext, logger
 
 
 @click.group()
@@ -19,8 +19,18 @@ def query(context):
 def suid(context: TrolleyToolContext, suid):
     """Query StudyInstanceUID"""
     trolley: Trolley = context.trolley
-    result = trolley.find_study(Query(StudyInstanceUID=suid))
-    print(result)
+    result = trolley.find_study(
+        Query(
+            StudyInstanceUID=suid,
+            include_fields=[
+                "PatientID",
+                "PatientBirthDate",
+                "StudyDate",
+                "ModalitiesInStudy",
+            ],
+        )
+    )
+    logger.info(result.data)
 
 
 query.add_command(suid)

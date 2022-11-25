@@ -1,4 +1,5 @@
-from dicomtrolleytool.cli.entrypoint import main, status
+from dicomtrolleytool.cli.entrypoint import main
+from dicomtrolleytool.cli.base import status
 
 
 def test_cli_base(context_runner):

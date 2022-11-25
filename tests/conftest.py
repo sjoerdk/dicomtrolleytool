@@ -4,7 +4,7 @@ import pytest
 from click.testing import CliRunner
 from dicomtrolley.trolley import Trolley
 
-from dicomtrolleytool.cli.cli_core import TrolleyToolContext
+from dicomtrolleytool.cli.base import TrolleyToolContext
 from dicomtrolleytool.persistence import TrolleyToolSettings
 
 

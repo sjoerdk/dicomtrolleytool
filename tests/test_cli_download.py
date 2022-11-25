@@ -1,7 +1,7 @@
-from dicomtrolleytool.cli.query import suid
+from dicomtrolleytool.cli.download import suid
 
 
-def test_cli_channel_list(context_runner):
+def test_cli_download(context_runner):
     """Just invoking root cli command should not crash"""
     result = context_runner.invoke(suid, args=["123"], catch_exceptions=False)
     assert result.exit_code == 0

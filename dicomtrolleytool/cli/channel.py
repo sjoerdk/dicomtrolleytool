@@ -1,6 +1,6 @@
 import click
 
-from dicomtrolleytool.cli.cli_core import TrolleyToolContext
+from dicomtrolleytool.cli.base import TrolleyToolContext
 
 
 @click.group()

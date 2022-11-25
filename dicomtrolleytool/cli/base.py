@@ -1,7 +1,8 @@
-"""Shared objects for CLI"""
+"""Shared objects for CLI and basic CLI commands"""
 import logging
 from dataclasses import dataclass
 
+import click
 from dicomtrolley.trolley import Trolley
 
 from dicomtrolleytool.logging import get_module_logger
@@ -53,3 +54,23 @@ def trolley_from_settings(settings: TrolleyToolSettings):
         trolley.query_missing = settings.query_missing
 
     return trolley
+
+
+@click.command(short_help="show tool status")
+@click.pass_obj
+def status(context: TrolleyToolContext):
+    """Get general status of this tool, show currently active server etc."""
+    print("Status")
+    print(f"Settings file at '{DEFAULT_SETTINGS_PATH}'")
+    print(f"trolley: {context.trolley}")
+
+
+@click.group
+def settings():
+    """Trolley tool settings"""
+    pass
+
+
+@click.command(short_help="Edit settings")
+def edit():
+    click.launch(str(DEFAULT_SETTINGS_PATH))
