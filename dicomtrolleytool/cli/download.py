@@ -17,7 +17,7 @@ def download(context):
 @click.command(short_help="Download by StudyInstanceUID")
 @click.pass_obj
 @click.argument("suid", type=str)
-def suid(context: TrolleyToolContext, suid):
+def download_suid(context: TrolleyToolContext, suid):
     """Query StudyInstanceUID"""
     trolley: Trolley = context.trolley
     study = trolley.find_study(Query(StudyInstanceUID=suid))
@@ -25,4 +25,4 @@ def suid(context: TrolleyToolContext, suid):
     trolley.download(study, output_dir=download_dir)
 
 
-download.add_command(suid)
+download.add_command(download_suid)
