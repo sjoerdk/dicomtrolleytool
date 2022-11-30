@@ -39,12 +39,12 @@ shred -d <template_file>
 ```
 
 ## Usage
-{{% octicon-alert Not implemented yet }}
 
 From command line:
 ```
 > trolley query StudyInstanceUID=12345
 > trolley channel list
+
 ```
 
 ## Handling credentials

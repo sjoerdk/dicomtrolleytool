@@ -4,7 +4,6 @@ from dicomtrolleytool.cli.base import TrolleyToolContext
 
 
 @click.group()
-@click.pass_obj
 def channel():
     """Manage ways of querying and retrieving DICOM data"""
 
