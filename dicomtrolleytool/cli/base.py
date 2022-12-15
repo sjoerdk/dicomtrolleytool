@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import click
 from dicomtrolley.trolley import Trolley
 
-from dicomtrolleytool.logging import get_module_logger
+from dicomtrolleytool.logs import get_module_logger
 from dicomtrolleytool.persistence import (
     DEFAULT_SETTINGS_PATH,
     SettingsFile,

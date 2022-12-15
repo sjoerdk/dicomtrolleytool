@@ -9,7 +9,7 @@ from pydantic.main import BaseModel
 
 from .channels import Channel, ChannelFactory
 from .exceptions import TrolleyToolError
-from .logging import get_module_logger
+from .logs import get_module_logger
 
 logger = get_module_logger("persistence")
 
