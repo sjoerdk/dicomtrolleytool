@@ -33,6 +33,27 @@ def query_suid(context: TrolleyToolContext, suid):
     logger.info(result.data)
 
 
+@click.command(short_help="Query by Accession Number", name="acc")
+@click.pass_obj
+@click.argument("acc_num", type=str)
+def query_accession_number(context: TrolleyToolContext, acc_num):
+    """Query StudyInstanceUID"""
+    trolley: Trolley = context.trolley
+    result = trolley.find_study(
+        Query(
+            AccessionNumber=acc_num,
+            include_fields=[
+                "StudyInstanceUID",
+                "PatientID",
+                "PatientBirthDate",
+                "StudyDate",
+                "ModalitiesInStudy",
+            ],
+        )
+    )
+    logger.info(result.data)
+
+
 @click.command(short_help="Query by PatientID", name="patient_id")
 @click.pass_obj
 @click.argument("patient_id", type=str)
@@ -75,4 +96,5 @@ def studies_to_string(studies: List[Study]) -> str:
 
 
 query.add_command(query_suid)
+query.add_command(query_accession_number)
 query.add_command(query_patient_id)

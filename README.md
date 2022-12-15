@@ -39,11 +39,13 @@ shred -d <template_file>
 ```
 
 ## Usage
+You can used the keyword `trolley` from the command line.
 
-From command line:
+Some examples:
 ```
-> trolley query StudyInstanceUID=12345
-> trolley channel list
+> trolley query suid 12345
+> trolley query patient_id 1234
+> trolley download suid 12345
 
 ```
 

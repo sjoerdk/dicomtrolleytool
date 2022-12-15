@@ -14,14 +14,18 @@ def download(context):
     """Download DICOM data"""
 
 
-@click.command(short_help="Download by StudyInstanceUID")
+@click.command(short_help="Download by StudyInstanceUID", name="suid")
 @click.pass_obj
+@click.option("-o", "--output-dir")
 @click.argument("suid", type=str)
-def download_suid(context: TrolleyToolContext, suid):
+def download_suid(context: TrolleyToolContext, suid, output_dir):
     """Query StudyInstanceUID"""
     trolley: Trolley = context.trolley
     study = trolley.find_study(Query(StudyInstanceUID=suid))
-    download_dir = tempfile.gettempdir()
+    if output_dir is None:
+        download_dir = tempfile.gettempdir()
+    else:
+        download_dir = output_dir
     trolley.download(study, output_dir=download_dir)
 
 
