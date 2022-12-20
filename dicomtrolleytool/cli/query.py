@@ -13,6 +13,16 @@ def query():
     """Query DICOM data"""
 
 
+# Always ask for these field in any query
+DEFAULT_QUERY_FIELDS = [
+    "PatientID",
+    "PatientBirthDate",
+    "StudyDate",
+    "ModalitiesInStudy",
+    "NumberOfStudyRelatedInstances",
+]
+
+
 @click.command(short_help="Query by StudyInstanceUID", name="suid")
 @click.pass_obj
 @click.argument("suid", type=str)
@@ -22,12 +32,7 @@ def query_suid(context: TrolleyToolContext, suid):
     result = trolley.find_study(
         Query(
             StudyInstanceUID=suid,
-            include_fields=[
-                "PatientID",
-                "PatientBirthDate",
-                "StudyDate",
-                "ModalitiesInStudy",
-            ],
+            include_fields=DEFAULT_QUERY_FIELDS,
         )
     )
     logger.info(result.data)
@@ -42,13 +47,7 @@ def query_accession_number(context: TrolleyToolContext, acc_num):
     result = trolley.find_study(
         Query(
             AccessionNumber=acc_num,
-            include_fields=[
-                "StudyInstanceUID",
-                "PatientID",
-                "PatientBirthDate",
-                "StudyDate",
-                "ModalitiesInStudy",
-            ],
+            include_fields=["StudyInstanceUID"] + DEFAULT_QUERY_FIELDS,
         )
     )
     logger.info(result.data)
