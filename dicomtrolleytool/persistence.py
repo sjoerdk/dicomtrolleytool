@@ -39,10 +39,17 @@ class TrolleyToolSettings(BaseModel):
         """Persist this object to given stream"""
         stream.write(self.json(indent=2))
 
-    def save(self, path=None):
-        if not path:
-            path = DEFAULT_SETTINGS_PATH
-        with open(path, "w") as f:
+    def save(self):
+        raise TrolleyToolError("Cannot save settings - No associated filename found")
+
+
+class SettingsFromFile(TrolleyToolSettings):
+    """Settings with associated file on disk to save to"""
+
+    path: pathlib.Path
+
+    def save(self):
+        with open(self.path, "w") as f:
             self.write_to(f)
 
 
@@ -52,9 +59,10 @@ class SettingsFile:
     def __init__(self, path):
         self.path = path
 
-    def load_settings(self) -> TrolleyToolSettings:
+    def load_settings(self) -> SettingsFromFile:
         self.assert_settings()
-        return TrolleyToolSettings.parse_file(self.path)
+        settings = TrolleyToolSettings.parse_file(self.path)
+        return SettingsFromFile(**settings.dict(), path=self.path)
 
     def assert_settings(self):
         if not self.path.exists():

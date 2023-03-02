@@ -5,19 +5,18 @@ from dicomtrolleytool.persistence import (
     KeyRingStorage,
     MemoryStorage,
     PersistenceError,
-    TrolleyToolSettings,
+    SettingsFromFile,
 )
 
 
 def test_settings(tmp_path):
-    settings = TrolleyToolSettings(
-        searcher_name="searcher", downloader_name="downloader"
-    )
-
     settings_path = tmp_path / "test_settings.json"
-    settings.save(path=settings_path)
+    settings = SettingsFromFile(
+        path=settings_path, searcher_name="searcher", downloader_name="downloader"
+    )
+    settings.save()
 
-    loaded = TrolleyToolSettings.parse_file(settings_path)
+    loaded = SettingsFile(settings_path).load_settings()
     assert settings.json() == loaded.json()
 
 
@@ -25,10 +24,8 @@ def test_disk_settings(tmp_path):
     path = tmp_path / "test_settings.json"
     assert not path.exists()
     disk_settings = SettingsFile(path=path)
-    settings = disk_settings.load_settings()
-    assert path.exists()
-    loaded = TrolleyToolSettings.parse_file(path)
-    assert loaded.json() == settings.json()
+    disk_settings.load_settings()
+    assert path.exists()  # loading non-existant should create
 
 
 def test_channel_not_found():

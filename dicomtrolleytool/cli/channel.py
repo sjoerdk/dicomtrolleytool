@@ -16,4 +16,15 @@ def cli_list(context: TrolleyToolContext):
     print(f"{context.settings.channels}")
 
 
+@click.command(name="set-searcher")
+@click.argument("name", type=str)
+@click.pass_obj
+def set_searcher(context: TrolleyToolContext, name):
+    """Set channel to use for search"""
+    context.settings.searcher_name = name
+    context.settings.save()
+    print(f"Set searcher to '{name}'")
+
+
 channel.add_command(cli_list)
+channel.add_command(set_searcher)
