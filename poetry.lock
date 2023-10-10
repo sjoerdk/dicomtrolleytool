@@ -82,20 +82,20 @@ test = ["pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-subtests",
 
 [[package]]
 name = "dicomtrolley"
-version = "2.1.7"
-description = "Retrieve medical images via WADO, MINT, RAD69 and DICOM-QR"
+version = "3.0.4"
+description = "Retrieve medical images via WADO-URI, WADO-RS, QIDO-RS, MINT, RAD69 and DICOM-QR"
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 Jinja2 = ">=3.0.3,<4.0.0"
-pydantic = ">=1.8.2,<1.9.0"
+pydantic = "1.8.2"
 pydicom = ">=2.1.2,<3.0.0"
 pynetdicom = ">=1.5.6,<2.0.0"
 requests = ">=2.25.1,<3.0.0"
 requests-futures = ">=1.0.0,<2.0.0"
-requests-toolbelt = ">=0.9.1,<0.10.0"
+requests-toolbelt = ">=1.0.0,<2.0.0"
 
 [[package]]
 name = "exceptiongroup"
@@ -399,11 +399,11 @@ requests = ">=1.2.0"
 
 [[package]]
 name = "requests-toolbelt"
-version = "0.9.1"
+version = "1.0.0"
 description = "A utility belt for advanced users of python-requests"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
 requests = ">=2.0.1,<3.0.0"
@@ -472,7 +472,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ec507c27611651f122722f1b2afdeafad85235b26761f8c4fd97ad5dfcde93df"
+content-hash = "4bfe4d2d0bd6e87c805626ea73409e53a4c0532da1d45db5a33052a8d9d813f7"
 
 [metadata.files]
 attrs = []

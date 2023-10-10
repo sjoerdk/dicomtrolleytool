@@ -49,6 +49,19 @@ Some examples:
 
 ```
 
+## Query levels
+You can get series level information like this:
+```
+> trolley query suid 123 --query-level Series
+```
+
+## Piping output
+Query output is currently logged to stdout. If you want to pipe this, redirect stderr to stdin
+using `2>$1`:
+```
+> trolley query suid 123 --query-level Series 2>$1 | grep 'thing to grep for' "
+```
+
 ## Handling credentials
 {{% octicon-alert Not implemented yet }}
 
