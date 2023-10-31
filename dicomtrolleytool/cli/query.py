@@ -7,6 +7,7 @@ from dicomtrolley.core import Query, QueryLevels, Study
 from dicomtrolley.trolley import Trolley
 
 from dicomtrolleytool.cli.base import TrolleyToolContext, logger
+from dicomtrolleytool.query import collect_query_results
 
 
 @click.group()
@@ -16,6 +17,8 @@ def query():
 
 # Ask for these fields if not specified
 DEFAULT_INCLUDE_FIELDS_STUDY = [
+    "StudyInstanceUID",
+    "AccessionNumber",
     "PatientID",
     "PatientBirthDate",
     "StudyDate",
@@ -56,7 +59,7 @@ def get_default_include_fields(query_level):
 
 @click.command(short_help="Query by StudyInstanceUID", name="suid")
 @click.pass_obj
-@click.argument("suid", type=str)
+@click.argument("suids", type=str, nargs=-1)
 @click.option(
     "--query-level",
     type=Choice(choices=[x.name for x in QueryLevels], case_sensitive=False),
@@ -64,37 +67,60 @@ def get_default_include_fields(query_level):
     help="Show information on study, series or instance level",
     show_default=True,
 )
-def query_suid(context: TrolleyToolContext, suid, query_level):
-    """Query StudyInstanceUID"""
+def query_suid(context: TrolleyToolContext, suids, query_level):
+    """Query StudyInstanceUID or space-separated list"""
     trolley: Trolley = context.trolley
-    result = trolley.find_study(
-        Query(
-            StudyInstanceUID=suid,
-            include_fields=get_default_include_fields(query_level),
-            query_level=query_level,
+    for suid in suids:
+        result = trolley.find_study(
+            Query(
+                StudyInstanceUID=suid,
+                include_fields=get_default_include_fields(query_level),
+                query_level=query_level,
+            )
         )
-    )
 
-    logger.info(result.data)
-    if result.series:
-        logger.info("All series")
-        for x in result.series:
-            logger.info(x.data)
+        logger.info(result.data)
+        if result.series:
+            logger.info("All series")
+            for x in result.series:
+                logger.info(x.data)
 
 
 @click.command(short_help="Query by Accession Number", name="acc")
 @click.pass_obj
-@click.argument("acc_num", type=str)
-def query_accession_number(context: TrolleyToolContext, acc_num):
-    """Query StudyInstanceUID"""
-    trolley: Trolley = context.trolley
-    result = trolley.find_study(
+@click.argument("acc_nums", type=str, nargs=-1)
+@click.option(
+    "--query-level",
+    type=Choice(choices=[x.name for x in QueryLevels], case_sensitive=False),
+    default=QueryLevels.STUDY,
+    help="Show information on study, series or instance level",
+    show_default=True,
+)
+def query_accession_number(context: TrolleyToolContext, acc_nums, query_level):
+    """Query Accession number or space-separated list"""
+
+    queries = [
         Query(
             AccessionNumber=acc_num,
-            include_fields=["StudyInstanceUID"] + DEFAULT_INCLUDE_FIELDS_STUDY,
+            include_fields=get_default_include_fields(query_level),
+            query_level=query_level,
         )
-    )
-    logger.info(result.data)
+        for acc_num in acc_nums
+    ]
+
+    query_results = collect_query_results(trolley=context.trolley, queries=queries)
+
+    logger.info(f"Found {len(query_results)} results")
+    for result in query_results:
+        if result.query:
+            print(result.query.to_short_string())
+        if result.is_error():
+            print("Error. No Results found")
+        else:
+            content: Study = result.content
+            print(f"All series for {content.uid}")
+            for x in content.series:
+                print(x.data)
 
 
 @click.command(short_help="Query by PatientID", name="patient_id")

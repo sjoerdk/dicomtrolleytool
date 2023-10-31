@@ -43,12 +43,13 @@ You can used the keyword `trolley` from the command line.
 
 Some examples:
 ```
-> trolley query suid 12345
+> trolley query suid 12345                     # simple query
+> trolley query suid 12345 324345 345345       # query multiple
 > trolley query patient_id 1234
 > trolley download suid 12345
 
-```
 
+```
 ## Query levels
 You can get series level information like this:
 ```
@@ -59,7 +60,7 @@ You can get series level information like this:
 Query output is currently logged to stdout. If you want to pipe this, redirect stderr to stdin
 using `2>$1`:
 ```
-> trolley query suid 123 --query-level Series 2>$1 | grep 'thing to grep for' "
+> trolley query suid 123 --query-level Series 2>&1 | grep 'thing to grep for' "
 ```
 
 ## Handling credentials
