@@ -5,6 +5,11 @@ from dicomtrolley.core import Query, Study
 from dicomtrolley.exceptions import DICOMTrolleyError
 from dicomtrolley.trolley import Trolley
 
+from dicomtrolleytool.logs import get_module_logger
+
+
+logger = get_module_logger("query")
+
 
 class QueryResult:
     def __init__(self, content: Union[Study, Exception], query: Query):
@@ -53,6 +58,7 @@ def collect_query_results(
                 QueryStudyResult(content=trolley.find_study(query), query=query)
             )
         except DICOMTrolleyError as e:
+            logger.warning(e)
             results.append(QueryErrorResult(content=e, query=query))
 
     return results

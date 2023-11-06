@@ -256,8 +256,8 @@ def format_query_results_table(
     )
     if error_results:
         logger.warning(
-            f"{len(error_results)} queries resulted in error. Excluding "
-            f"those from table"
+            f"{len(error_results)} queries resulted in error. Excluding those "
+            f"from table"
         )
     # disable_numparse to prevent messing up accession numbers
     return tabulate(table, headers="keys", tablefmt="simple", disable_numparse=True)

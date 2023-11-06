@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import click
 from dicomtrolley.trolley import Trolley
 
-from dicomtrolleytool.logs import get_module_logger
+from dicomtrolleytool.logs import get_module_logger, install_colouredlogs
 from dicomtrolleytool.persistence import (
     DEFAULT_SETTINGS_PATH,
     SettingsFile,
@@ -17,12 +17,15 @@ logger = get_module_logger("trolleytool")
 
 
 def configure_logging(verbose):
+    loglevel = logging.INFO
     if verbose == 0:
-        logging.basicConfig(level=logging.INFO)
-        logging.info("Set loglevel to INFO")
+        loglevel = logging.INFO
     if verbose >= 1:
-        logging.basicConfig(level=logging.DEBUG)
-        logging.info("Set loglevel to DEBUG")
+        loglevel = logging.DEBUG
+
+    logging.info(f"Set loglevel to {loglevel}")
+    logging.basicConfig(level=loglevel)
+    install_colouredlogs(level=loglevel)
 
 
 @dataclass
