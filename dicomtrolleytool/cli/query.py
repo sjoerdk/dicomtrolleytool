@@ -1,5 +1,5 @@
 """For executing queries from command line"""
-from typing import List
+from typing import List, Set
 
 import click
 from click import Choice
@@ -7,6 +7,8 @@ from dicomtrolley.core import Query, QueryLevels, Study
 from dicomtrolley.trolley import Trolley
 
 from dicomtrolleytool.cli.base import TrolleyToolContext, logger
+from dicomtrolleytool.cli.click_parameter_types import DICOMTagNameListParamType
+from dicomtrolleytool.cli.output import ResultFormat, format_query_results
 from dicomtrolleytool.query import collect_query_results
 
 
@@ -16,7 +18,7 @@ def query():
 
 
 # Ask for these fields if not specified
-DEFAULT_INCLUDE_FIELDS_STUDY = [
+DEFAULT_INCLUDE_FIELDS_STUDY = {
     "StudyInstanceUID",
     "AccessionNumber",
     "PatientID",
@@ -24,37 +26,40 @@ DEFAULT_INCLUDE_FIELDS_STUDY = [
     "StudyDate",
     "ModalitiesInStudy",
     "NumberOfStudyRelatedInstances",
-]
+}
 
-DEFAULT_INCLUDE_FIELDS_SERIES = [
+
+DEFAULT_INCLUDE_FIELDS_SERIES = {
     "SeriesInstanceUID",
     "SeriesDate",
     "SeriesDescription",
     "Modality",
     "ProtocolName",
-]
+}
 
-DEFAULT_INCLUDE_FIELDS_INSTANCE = [
+DEFAULT_INCLUDE_FIELDS_INSTANCE = {
     "SOPClassUID",
     "Rows",
     "Columns",
     "StationName",
     "SoftwareVersions",
-]
+}
 
 
-def get_default_include_fields(query_level):
+def get_default_include_fields(query_level) -> Set[str]:
     """DICOM fields to include for different levels of queries"""
     if query_level == QueryLevels.STUDY:
         return DEFAULT_INCLUDE_FIELDS_STUDY
     elif query_level == QueryLevels.SERIES:
-        return DEFAULT_INCLUDE_FIELDS_STUDY + DEFAULT_INCLUDE_FIELDS_SERIES
+        return DEFAULT_INCLUDE_FIELDS_STUDY | DEFAULT_INCLUDE_FIELDS_SERIES
     elif query_level == QueryLevels.INSTANCE:
         return (
             DEFAULT_INCLUDE_FIELDS_STUDY
-            + DEFAULT_INCLUDE_FIELDS_SERIES
-            + DEFAULT_INCLUDE_FIELDS_INSTANCE
+            | DEFAULT_INCLUDE_FIELDS_SERIES
+            | DEFAULT_INCLUDE_FIELDS_INSTANCE
         )
+    else:
+        raise ValueError(f"Unknown query level '{query_level}'")
 
 
 @click.command(short_help="Query by StudyInstanceUID", name="suid")
@@ -62,7 +67,7 @@ def get_default_include_fields(query_level):
 @click.argument("suids", type=str, nargs=-1)
 @click.option(
     "--query-level",
-    type=Choice(choices=[x.name for x in QueryLevels], case_sensitive=False),
+    type=Choice(choices=QueryLevels, case_sensitive=False),
     default=QueryLevels.STUDY,
     help="Show information on study, series or instance level",
     show_default=True,
@@ -91,36 +96,61 @@ def query_suid(context: TrolleyToolContext, suids, query_level):
 @click.argument("acc_nums", type=str, nargs=-1)
 @click.option(
     "--query-level",
-    type=Choice(choices=[x.name for x in QueryLevels], case_sensitive=False),
+    type=Choice(choices=QueryLevels, case_sensitive=False),
     default=QueryLevels.STUDY,
     help="Show information on study, series or instance level",
     show_default=True,
 )
-def query_accession_number(context: TrolleyToolContext, acc_nums, query_level):
+@click.option(
+    "--output-format",
+    type=Choice(choices=ResultFormat, case_sensitive=False),
+    default=ResultFormat.RAW.value,
+    help="How to print results to console",
+    show_default=True,
+)
+@click.option(
+    "--include-fields",
+    type=DICOMTagNameListParamType(),
+    help="Additional DICOM tag names to search for, comma separated",
+    default=[],
+)
+@click.option(
+    "--output-fields",
+    type=DICOMTagNameListParamType(),
+    help="Show only these DICOM tags in output. Default is to show all",
+    default=[],
+)
+def query_accession_number(
+    context: TrolleyToolContext,
+    acc_nums,
+    query_level,
+    output_format,
+    include_fields,
+    output_fields,
+):
     """Query Accession number or space-separated list"""
+    output_format = output_format.upper()  # option is case-insensitive in cli
+
+    include_fields = list(get_default_include_fields(query_level) | set(include_fields))
 
     queries = [
         Query(
             AccessionNumber=acc_num,
-            include_fields=get_default_include_fields(query_level),
+            include_fields=include_fields,
             query_level=query_level,
         )
         for acc_num in acc_nums
     ]
 
     query_results = collect_query_results(trolley=context.trolley, queries=queries)
-
     logger.info(f"Found {len(query_results)} results")
-    for result in query_results:
-        if result.query:
-            print(result.query.to_short_string())
-        if result.is_error():
-            print("Error. No Results found")
-        else:
-            content: Study = result.content
-            print(f"All series for {content.uid}")
-            for x in content.series:
-                print(x.data)
+    print(
+        format_query_results(
+            query_results,
+            output_format=output_format,
+            output_field_filter=output_fields,
+        )
+    )
 
 
 @click.command(short_help="Query by PatientID", name="patient_id")

@@ -20,6 +20,13 @@ scripts. This is annoying for three reasons:
 
 dicomtrolleytool solves these three issues.
 
+## Development - Alpha
+Nov 2023: This is a personal tool. I try to keep it clean and tested enough to continue developing, but expect 
+NotImplementedError, incomplete coverage, incomplete docs, missing parameters. If this tool 
+containue to work for me I might make an effort and clean up.
+
+
+
 ## Installation
 ```
 pip install dicomtrolleytool
@@ -56,11 +63,17 @@ You can get series level information like this:
 > trolley query suid 123 --query-level Series
 ```
 
-## Piping output
-Query output is currently logged to stdout. If you want to pipe this, redirect stderr to stdin
-using `2>$1`:
+## Filtering output
+You can restrict the output using --output-fields
 ```
-> trolley query suid 123 --query-level Series 2>&1 | grep 'thing to grep for' "
+> trolley -v query acc 1234 --query-level INSTANCE --output-format TABLE --output-fields ProtocolName,SeriesInstanceUID,PatientID
+
+```
+
+
+## Piping output
+```
+> trolley query suid 123 --query-level Series > grep 'thing to grep for' "
 ```
 
 ## Handling credentials

@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 from click.testing import CliRunner
+from dicomtrolley.core import Query
 from dicomtrolley.dicom_qr import DICOMQR
 from dicomtrolley.trolley import Trolley
 from pydicom import Dataset
@@ -10,6 +11,7 @@ from pydicom.tag import Tag
 
 from dicomtrolleytool.cli.base import TrolleyToolContext
 from dicomtrolleytool.persistence import TrolleyToolSettings
+from dicomtrolleytool.query import QueryStudyResult
 
 
 @pytest.fixture
@@ -138,3 +140,12 @@ def an_image_level_study():
         sop_class_uids=[f"Instance{i}" for i in range(1, 10)],
     )
     return DICOMQR.parse_c_find_response(response)
+
+
+@pytest.fixture()
+def some_query_results(an_image_level_study):
+    return [
+        QueryStudyResult(an_image_level_study[0], Query(AccessionNumber="1")),
+        QueryStudyResult(an_image_level_study[0], Query(AccessionNumber="2")),
+        QueryStudyResult(an_image_level_study[0], Query(AccessionNumber="3")),
+    ]

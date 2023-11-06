@@ -6,13 +6,17 @@ from dicomtrolley.core import Query
 from dicomtrolley.exceptions import DICOMTrolleyError
 from dicomtrolley.trolley import Trolley
 
-from dicomtrolleytool.query import QueryResult, collect_query_results
+from dicomtrolleytool.query import (
+    QueryErrorResult,
+    QueryStudyResult,
+    collect_query_results,
+)
 
 
 def test_query_result(an_image_level_study):
     """Query results should know whether they failed"""
-    assert not QueryResult(an_image_level_study[0]).is_error()
-    assert QueryResult(DICOMTrolleyError("bad")).is_error()
+    assert not QueryStudyResult(an_image_level_study[0], query=Query()).is_error()
+    assert QueryErrorResult(DICOMTrolleyError("bad"), query=Query()).is_error()
 
 
 @pytest.fixture
@@ -34,12 +38,3 @@ def test_collect_query_results(a_trolley_with_errors):
     )
     assert not results[0].is_error()
     assert results[1].is_error()
-
-
-@pytest.fixture()
-def some_query_results(an_image_level_study):
-    return [
-        QueryResult(an_image_level_study[0], Query(AccessionNumber="1")),
-        QueryResult(an_image_level_study[0], Query(AccessionNumber="2")),
-        QueryResult(an_image_level_study[0], Query(AccessionNumber="3")),
-    ]
