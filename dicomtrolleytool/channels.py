@@ -1,6 +1,7 @@
 """Models ways of communicating with a DICOM server"""
 from typing import Any, Dict, List
 
+from dicomtrolley.core import Downloader, Searcher
 from pydantic.main import BaseModel
 from pydantic.types import SecretStr
 from dicomtrolley.auth import create_session
@@ -12,7 +13,10 @@ from dicomtrolleytool.exceptions import TrolleyToolError
 
 
 class Channel(BaseModel):
-    """A ready-to-use channel of interaction with a DICOM server, with credentials"""
+    """A ready-to-use channel of interaction with a DICOM server, with credentials
+
+    Can be persisted to disk
+    """
 
     key: str  # for storage and retrieval
     description: str = ""  # single-line human-readable description
@@ -33,7 +37,17 @@ class Channel(BaseModel):
         return [name for name, f in self.__fields__.items() if f.type_ == SecretStr]
 
 
-class MintChannel(Channel):
+class DownloaderChannel(Channel):
+    def init_downloader(self) -> Downloader:
+        raise NotImplementedError()
+
+
+class SearcherChannel(Channel):
+    def init_searcher(self) -> Searcher:
+        raise NotImplementedError()
+
+
+class MintChannel(SearcherChannel):
     """Can do DICOM searches with MINT
 
     Wrapper around dicomtrolley Mint.
@@ -53,7 +67,7 @@ class MintChannel(Channel):
         return Mint(session, self.mint_url)
 
 
-class Rad69Channel(Channel):
+class Rad69Channel(DownloaderChannel):
     """Can do DICOM downloads with the rad69 protocol"""
 
     login_url: str
@@ -70,7 +84,7 @@ class Rad69Channel(Channel):
         return Rad69(session=session, url=self.rad69_url)
 
 
-class DICOMQRChannel(Channel):
+class DICOMQRChannel(SearcherChannel):
     """Query using dicom QR"""
 
     host: str
