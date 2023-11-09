@@ -1,6 +1,11 @@
 from pydantic.types import SecretStr
 
-from dicomtrolleytool.channels import DICOMQRChannel, MintChannel, Rad69Channel
+from dicomtrolleytool.channels import (
+    DICOMQRChannel,
+    DICOMWebChannel,
+    MintChannel,
+    Rad69Channel,
+)
 from dicomtrolleytool.persistence import KeyRingStorage
 
 
@@ -35,5 +40,15 @@ storage.save_channel(
     ),
 )
 
+storage.save_channel(
+    key="DICOM_WEB",
+    channel=DICOMWebChannel(
+        key="DICOM_WEB",
+        description="A connection to host using DICOM-web",
+        dicom_web_url="https://host/dicomweb",
+        password=SecretStr("secret"),
+        user="username",
+    ),
+)
 
 print("Wrote connections to storage")

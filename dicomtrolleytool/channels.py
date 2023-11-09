@@ -1,15 +1,22 @@
 """Models ways of communicating with a DICOM server"""
 from typing import Any, Dict, List
 
+import requests
 from dicomtrolley.core import Downloader, Searcher
+from dicomtrolley.qido_rs import QidoRS
+from dicomtrolley.wado_rs import WadoRS
 from pydantic.main import BaseModel
 from pydantic.types import SecretStr
 from dicomtrolley.auth import create_session
 from dicomtrolley.dicom_qr import DICOMQR
 from dicomtrolley.mint import Mint
 from dicomtrolley.rad69 import Rad69
+from requests.auth import HTTPBasicAuth
 
 from dicomtrolleytool.exceptions import TrolleyToolError
+from dicomtrolleytool.logs import get_module_logger
+
+logger = get_module_logger("channels")
 
 
 class Channel(BaseModel):
@@ -103,10 +110,39 @@ class DICOMQRChannel(SearcherChannel):
         )
 
 
+class DICOMWebChannel(SearcherChannel):
+    """QIDO-RS and WADO-RS. Optionally over the same connection"""
+
+    dicom_web_url: str
+    user: str
+    password: SecretStr
+
+    def get_session(self):
+        session = requests.Session()
+        logger.debug(f'Creating basic auth session with user "{self.user}"')
+        session.auth = HTTPBasicAuth(
+            username=self.user, password=self.password.get_secret_value()
+        )
+        return session
+
+    def init_downloader(self, session=None) -> WadoRS:
+        if not session:
+            logger.debug("WadoRS session not given. Creating new one")
+            session = self.get_session()
+        return WadoRS(session=session, url=self.dicom_web_url)
+
+    def init_searcher(self, session=None) -> QidoRS:
+        if not session:
+            logger.debug("QidoRS session not given. Creating new one")
+            session = self.get_session()
+        return QidoRS(session=session, url=self.dicom_web_url)
+
+
 CHANNEL_CLASSES: Dict[str, Any] = {
     "rad69": Rad69Channel,
     "mint": MintChannel,
     "dicomqr": DICOMQRChannel,
+    "dicomweb": DICOMWebChannel,
 }
 
 
