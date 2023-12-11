@@ -1,7 +1,8 @@
 # History
 
 ## v0.5.0 (2023-10-31)
-* Adds support for querying multiple ids
+* Adds support for querying multiple ids 
+* Adds query-level and output format options to query acc
 
 ## v0.4.0 (2022-11-18)
 * Adds DICOMQR channel
