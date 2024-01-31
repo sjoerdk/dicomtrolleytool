@@ -21,6 +21,7 @@ class ResultFormat(str, Enum):
 
     RAW = "RAW"
     TABLE = "TABLE"
+    GITHUB = "GITHUB"  # github markup table
     CSV = "CSV"
 
 
@@ -65,6 +66,10 @@ def format_query_results(
         return format_query_results_raw(results, output_field_filter)
     elif output_format == ResultFormat.TABLE:
         return format_query_results_table(results, output_field_filter)
+    elif output_format == ResultFormat.GITHUB:
+        return format_query_results_table(
+            results, output_field_filter, table_format="github"
+        )
     elif output_format == ResultFormat.CSV:
         return format_query_results_csv(results, output_field_filter)
     else:
@@ -246,6 +251,7 @@ def format_query_results_table(
     results: Iterable[QueryResult],
     output_field_filter: Optional[List[str]] = None,
     format_level: Optional[FormatLevel] = None,
+    table_format: str = "simple",
 ) -> str:
     """Create"""
     study_results, error_results = split_error_results(results)
@@ -260,7 +266,7 @@ def format_query_results_table(
             f"from table"
         )
     # disable_numparse to prevent messing up accession numbers
-    return tabulate(table, headers="keys", tablefmt="simple", disable_numparse=True)
+    return tabulate(table, headers="keys", tablefmt=table_format, disable_numparse=True)
 
 
 def format_query_results_csv(
