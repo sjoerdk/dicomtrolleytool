@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dicomtrolleytool"
-version = "0.6.0"
+version = "0.6.1"
 description = "Command line tool for dicom query and download"
 authors = ["sjoerdk <sjoerd.kerkstra@radboudumc.nl>"]
 readme = "README.md"

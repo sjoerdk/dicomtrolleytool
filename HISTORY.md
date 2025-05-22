@@ -1,4 +1,7 @@
 # History
+## v0.6.1 (2025-05-22)
+* Updates readme, deployment
+
 ## v0.6.0 (2025-05-22)
 * Updates pydantic 1 -> 2 (2.11)
 
