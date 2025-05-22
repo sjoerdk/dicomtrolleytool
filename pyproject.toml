@@ -8,7 +8,7 @@ license = "Apache-2.0"
 [tool.poetry.dependencies]
 python = "^3.9"
 keyring = "^23.11.0"
-pydantic = "^1.8.0"
+pydantic = "^2.11.4"
 dicomtrolley = "^3.0.4"
 PyYAML = "^6.0"
 click = "^8.1.3"

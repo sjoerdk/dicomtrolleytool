@@ -41,7 +41,9 @@ class Channel(BaseModel):
         return params
 
     def get_secret_param_names(self) -> List[str]:
-        return [name for name, f in self.__fields__.items() if f.type_ == SecretStr]
+        return [
+            name for name, f in self.model_fields.items() if f.annotation == SecretStr
+        ]
 
 
 class DownloaderChannel(Channel):

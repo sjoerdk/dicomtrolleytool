@@ -27,17 +27,17 @@ class TrolleyToolSettings(BaseModel):
     searcher_name: str
     downloader_name: str
 
-    query_missing: Optional[bool]
+    query_missing: Optional[bool] = None
 
     # specific to rad69 downloader
-    http_chunk_size: Optional[int]
+    http_chunk_size: Optional[int] = None
     request_per_series: bool = True
 
     channels: List[str] = []
 
     def write_to(self, stream: StringIO):
         """Persist this object to given stream"""
-        stream.write(self.json(indent=2))
+        stream.write(self.model_dump_json(indent=2))
 
     def save(self):
         raise TrolleyToolError("Cannot save settings - No associated filename found")
