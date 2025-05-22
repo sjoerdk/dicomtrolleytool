@@ -3,6 +3,7 @@ name = "dicomtrolleytool"
 version = "0.6.0"
 description = "Command line tool for dicom query and download"
 authors = ["sjoerdk <sjoerd.kerkstra@radboudumc.nl>"]
+readme = "README.md"
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
